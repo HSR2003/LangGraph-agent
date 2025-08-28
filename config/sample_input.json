@@ -1,0 +1,7 @@
+{
+  "customer_name": "Alice",
+  "email": "alice@example.com",
+  "query": "My order hasn’t arrived yet.",
+  "priority": "high",
+  "ticket_id": "TCK12345"
+}

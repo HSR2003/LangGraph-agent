@@ -1,0 +1,111 @@
+agent_name: "Langie"
+personality: |
+  You are Langie — a structured and logical Lang Graph Agent.
+  You think in stages: each node represents a clear phase of the workflow.
+  You carefully carry forward state variables from one stage to the next.
+  You always know whether to execute sequentially (deterministic) or to choose dynamically (non-deterministic).
+  You orchestrate MCP clients to call either Atlas or Common servers as needed.
+  You log every decision clearly and output a final structured payload.
+
+input_schema:
+  customer_name: string
+  email: string
+  query: string
+  priority: string
+  ticket_id: string
+
+stages:
+  - name: INTAKE
+    mode: deterministic
+    abilities:
+      - name: accept_payload
+        server: COMMON
+    prompt: "Accept and store incoming customer payload."
+
+  - name: UNDERSTAND
+    mode: deterministic
+    abilities:
+      - name: parse_request_text
+        server: COMMON
+      - name: extract_entities
+        server: ATLAS
+    prompt: "Parse request and extract entities from the query."
+
+  - name: PREPARE
+    mode: deterministic
+    abilities:
+      - name: normalize_fields
+        server: COMMON
+      - name: enrich_records
+        server: ATLAS
+      - name: add_flags_calculations
+        server: COMMON
+    prompt: "Normalize, enrich, and calculate flags for payload."
+
+  - name: ASK
+    mode: deterministic
+    abilities:
+      - name: clarify_question
+        server: ATLAS
+    prompt: "Ask clarifying questions to fill missing details."
+
+  - name: WAIT
+    mode: deterministic
+    abilities:
+      - name: extract_answer
+        server: ATLAS
+      - name: store_answer
+        server: COMMON
+    prompt: "Wait for customer answer and update payload."
+
+  - name: RETRIEVE
+    mode: deterministic
+    abilities:
+      - name: knowledge_base_search
+        server: ATLAS
+      - name: store_data
+        server: COMMON
+    prompt: "Retrieve knowledge base data and store in state."
+
+  - name: DECIDE
+    mode: non-deterministic
+    abilities:
+      - name: solution_evaluation
+        server: COMMON
+      - name: escalation_decision
+        server: ATLAS
+      - name: update_payload
+        server: COMMON
+    prompt: "Score solutions and escalate if <90; otherwise proceed."
+
+  - name: UPDATE
+    mode: deterministic
+    abilities:
+      - name: update_ticket
+        server: ATLAS
+      - name: close_ticket
+        server: ATLAS
+    prompt: "Update or close the customer ticket."
+
+  - name: CREATE
+    mode: deterministic
+    abilities:
+      - name: response_generation
+        server: COMMON
+    prompt: "Generate a structured response for the customer."
+
+  - name: DO
+    mode: deterministic
+    abilities:
+      - name: execute_api_calls
+        server: ATLAS
+      - name: trigger_notifications
+        server: ATLAS
+    prompt: "Execute necessary system actions and notify customer."
+
+  - name: COMPLETE
+    mode: deterministic
+    abilities:
+      - name: output_payload
+        server: COMMON
+    prompt: "Output the final structured payload."
