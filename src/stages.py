@@ -30,13 +30,13 @@ def make_stage(stage_conf: Dict[str, Any], clients: Dict[str, MCPClient], person
 
         # Handling non-deterministic stage 
         elif mode == "non-deterministic" and stage_name.upper() == "DECIDE":
-            # Step 1: evaluate solution
+            
             eval_resp: MCPResponse = clients["COMMON"].execute_ability("COMMON", "solution_evaluation", state["payload"])
             score = eval_resp.data.get("confidence_score", 0) if eval_resp.success else 0
             state["payload"]["decision_score"] = score
             state["logs"].append(f"[{stage_name}] solution_evaluation → Score={score}")
 
-            # Step 2: choosing path
+           
             if score < 90:
                 esc_resp = clients["ATLAS"].execute_ability("ATLAS", "escalation_decision", state["payload"])
                 if esc_resp.success and esc_resp.data:

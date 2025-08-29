@@ -24,10 +24,10 @@ class MCPClient:
         if ability == "solution_evaluation":
             query_text = payload.get("query", "").lower()
             if "arrived" in query_text:
-                # Alice-like case → high confidence → auto-resolve
+               
                 return MCPResponse(True, {"confidence_score": 95}, f"{ability} executed OK (auto-resolve)")
             else:
-                # Bob-like case → low confidence → escalate
+                
                 return MCPResponse(True, {"confidence_score": 40}, f"{ability} executed OK (escalate)")
 
         # --- otherwise, run through Gemini ---
