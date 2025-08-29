@@ -1,4 +1,4 @@
-
+# src/agent.py
 import yaml, json
 from .mcp_clients import MCPClient
 from .stages import make_stage
@@ -17,13 +17,13 @@ def run_agent(yaml_config_path: str, input_json_path: str):
         "ATLAS": MCPClient("ATLAS"),
     }
 
-    # Initial stage and prompt
+    # Initial stage and
     state = {"payload": sample_input, "logs": []}
 
     print(f"Agent {config['agent_name']} starting...")
     print(f"Personality:\n{config['personality']}")
 
-    # Running stage
+    # Run stages
     for stage_conf in config["stages"]:
         stage_fn = make_stage(stage_conf, clients, config["personality"])
         state = stage_fn(state)
@@ -37,4 +37,4 @@ def run_agent(yaml_config_path: str, input_json_path: str):
 
 
 if __name__ == "__main__":
-    run_agent("config/agent_config.yaml", "config/sample_input.json")
+    run_agent("config/agent_config.yaml", "config/sample_input_1.json")

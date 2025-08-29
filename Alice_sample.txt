@@ -1,0 +1,78 @@
+Agent Langie starting...
+Personality:
+You are Langie â€” a structured and logical Lang Graph Agent.
+You think in stages: each node represents a clear phase of the workflow.
+You carefully carry forward state variables from one stage to the next.
+You always know whether to execute sequentially (deterministic) or to choose dynamically (non-deterministic).
+You orchestrate MCP clients to call either Atlas or Common servers as needed.
+You log every decision clearly and output a final structured payload.
+
+
+ FINAL PAYLOAD:
+{
+  "customer_name": "Alice",
+  "email": "alice@example.com",
+  "query": "My order hasn\u00e2\u20ac\u2122t arrived yet.",
+  "priority": "high",
+  "ticket_id": "TCK12345",
+  "intent": "order_status_inquiry",
+  "parameters": {
+    "item_type": "order",
+    "delivery_status": "not_arrived"
+  },
+  "original_request": "My order hasn\u00e2\u20ac\u2122t arrived yet.",
+  "extracted_entities": {
+    "issue_type": "delivery_issue",
+    "customer_intent": "inquire_order_status",
+    "delivery_status": "not_arrived"
+  },
+  "next_action": "update_state_and_respond",
+  "response": "I understand that your order has not arrived yet. I'll check the status of your order right away.",
+  "decision_score": 95,
+  "decision": "Auto-resolved",
+  "resolution_summary": "Customer inquired about order status: 'My order hasn\u2019t arrived yet.'. System acknowledged the query and initiated an order status check. The immediate interaction was auto-resolved."
+}
+
+LOGS:
+[INTAKE] Stage started (mode=deterministic)
+[INTAKE] accept_payload → [COMMON] → accept_payload executed OK
+[INTAKE] Stage completed
+[UNDERSTAND] Stage started (mode=deterministic)
+[UNDERSTAND] parse_request_text → [COMMON] → parse_request_text executed OK
+[UNDERSTAND] extract_entities → [ATLAS] → extract_entities executed OK
+[UNDERSTAND] Stage completed
+[PREPARE] Stage started (mode=deterministic)
+[PREPARE] normalize_fields → [COMMON] → normalize_fields executed OK
+[PREPARE] enrich_records → [ATLAS] → enrich_records executed OK
+[PREPARE] add_flags_calculations → [COMMON] → add_flags_calculations executed OK
+[PREPARE] Stage completed
+[ASK] Stage started (mode=deterministic)
+[ASK] clarify_question → [ATLAS] → clarify_question executed OK
+[ASK] Stage completed
+[WAIT] Stage started (mode=deterministic)
+[WAIT] extract_answer → [ATLAS] → extract_answer executed OK
+[WAIT] store_answer → [COMMON] → store_answer executed OK
+[WAIT] Stage completed
+[RETRIEVE] Stage started (mode=deterministic)
+[RETRIEVE] knowledge_base_search → [ATLAS] → knowledge_base_search executed OK
+[RETRIEVE] store_data → [COMMON] → store_data executed OK
+[RETRIEVE] Stage completed
+[DECIDE] Stage started (mode=non-deterministic)
+[DECIDE] solution_evaluation → Score=95
+[DECIDE] Auto-resolved by COMMON
+[DECIDE] update_payload → [update_payload executed OK]
+[DECIDE] Stage completed
+[UPDATE] Stage started (mode=deterministic)
+[UPDATE] update_ticket → [ATLAS] → update_ticket executed OK
+[UPDATE] close_ticket → [ATLAS] → close_ticket executed OK
+[UPDATE] Stage completed
+[CREATE] Stage started (mode=deterministic)
+[CREATE] response_generation → [COMMON] → response_generation executed OK
+[CREATE] Stage completed
+[DO] Stage started (mode=deterministic)
+[DO] execute_api_calls → [ATLAS] → execute_api_calls executed OK
+[DO] trigger_notifications → [ATLAS] → trigger_notifications executed OK
+[DO] Stage completed
+[COMPLETE] Stage started (mode=deterministic)
+[COMPLETE] output_payload → [COMMON] → output_payload executed OK
+[COMPLETE] Stage completed

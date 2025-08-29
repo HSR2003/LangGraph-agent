@@ -1,0 +1,7 @@
+  {
+    "customer_name": "Bob",
+    "email": "bob@example.com",
+    "query": "I’ve been charged twice for the same order and I want a refund.",
+    "priority": "urgent",
+    "ticket_id": "TCK67890"
+  }
