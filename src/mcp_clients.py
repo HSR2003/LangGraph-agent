@@ -1,8 +1,3 @@
-# src/mcp_clients.py
-"""
-MCP Client wrapper for Common and Atlas servers.
-Uses Google Gemini 2.5 Flash for ability execution.
-"""
 
 import json
 import re
@@ -22,13 +17,10 @@ class MCPResponse:
 class MCPClient:
     def __init__(self, server: str):
         self.client = genai.Client()
-        self.server = server  # "COMMON" or "ATLAS"
+        self.server = server  # COMMON or ATLAS
 
     def execute_ability(self, server: str, ability: str, payload: Dict[str, Any]) -> MCPResponse:
-        """
-        Executes an ability against the given server (COMMON or ATLAS).
-        Returns structured MCPResponse.
-        """
+
         system_instruction = self._build_system_instruction(server, ability, payload)
 
         try:
@@ -39,13 +31,13 @@ class MCPClient:
             )
             raw_text = response.text.strip()
 
-            # --- Clean Markdown code fences if present ---
+            
             if raw_text.startswith("```"):
-                # Remove ```json or ``` fences
+                # Removing ```json or ``` 
                 raw_text = re.sub(r"^```(?:json)?", "", raw_text, flags=re.IGNORECASE).strip()
                 raw_text = re.sub(r"```$", "", raw_text).strip()
 
-            # Try to parse JSON
+            # parsinf json
             try:
                 data = json.loads(raw_text)
                 return MCPResponse(True, data, f"{ability} executed OK")
@@ -56,9 +48,7 @@ class MCPClient:
             return MCPResponse(False, {}, f"Error executing {ability}: {e}")
 
     def _build_system_instruction(self, server: str, ability: str, payload: Dict[str, Any]) -> str:
-        """
-        Construct the system instruction prompt.
-        """
+
         if server.upper() == "COMMON":
             return f"""
             You are a COMMON MCP server handling internal abilities.

@@ -1,26 +1,11 @@
-# src/stages.py
-"""
-Stage factory for Lang Graph Agent.
-- Consumes MCPClient to execute abilities per stage.
-- Supports deterministic (sequential) and non-deterministic (DECIDE) stages.
-"""
+
 
 from typing import Dict, Any
 from .mcp_clients import MCPClient, MCPResponse
 
 
 def make_stage(stage_conf: Dict[str, Any], clients: Dict[str, MCPClient], persona: str = ""):
-    """
-    Factory: returns a stage function that executes abilities from config.
-    
-    Args:
-        stage_conf: dict from YAML config for a single stage
-        clients: {"COMMON": MCPClient, "ATLAS": MCPClient}
-        persona: optional agent personality string
-    
-    Returns:
-        function(state) -> updated state
-    """
+
     def stage_fn(state):
         stage_name = stage_conf["name"]
         mode = stage_conf.get("mode", "deterministic")
@@ -35,7 +20,7 @@ def make_stage(stage_conf: Dict[str, Any], clients: Dict[str, MCPClient], person
                 response = clients[server].execute_ability(server, ability_name, state["payload"])
 
                 if response.success and response.data:
-                    # Merge returned data into payload
+                    
                     if isinstance(response.data, dict):
                         state["payload"].update(response.data)
 
@@ -43,7 +28,7 @@ def make_stage(stage_conf: Dict[str, Any], clients: Dict[str, MCPClient], person
                     f"[{stage_name}] {ability_name} → [{server}] → {response.message}"
                 )
 
-        # Handle non-deterministic stages (DECIDE)
+        # Handling non-deterministic stage 
         elif mode == "non-deterministic" and stage_name.upper() == "DECIDE":
             # Step 1: evaluate solution
             eval_resp: MCPResponse = clients["COMMON"].execute_ability("COMMON", "solution_evaluation", state["payload"])
@@ -51,7 +36,7 @@ def make_stage(stage_conf: Dict[str, Any], clients: Dict[str, MCPClient], person
             state["payload"]["decision_score"] = score
             state["logs"].append(f"[{stage_name}] solution_evaluation → Score={score}")
 
-            # Step 2: choose path
+            # Step 2: choosing path
             if score < 90:
                 esc_resp = clients["ATLAS"].execute_ability("ATLAS", "escalation_decision", state["payload"])
                 if esc_resp.success and esc_resp.data:
@@ -62,7 +47,7 @@ def make_stage(stage_conf: Dict[str, Any], clients: Dict[str, MCPClient], person
                 state["payload"]["decision"] = "Auto-resolved"
                 state["logs"].append(f"[{stage_name}] Auto-resolved by COMMON")
 
-            # Step 3: always update payload
+            # Step 3: updating payload
             upd_resp = clients["COMMON"].execute_ability("COMMON", "update_payload", state["payload"])
             if upd_resp.success and upd_resp.data:
                 state["payload"].update(upd_resp.data)

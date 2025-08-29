@@ -1,4 +1,4 @@
-# src/agent.py
+
 import yaml, json
 from .mcp_clients import MCPClient
 from .stages import make_stage
@@ -11,19 +11,19 @@ def run_agent(yaml_config_path: str, input_json_path: str):
     with open(input_json_path) as f:
         sample_input = json.load(f)
 
-    # Create clients
+    # ATLAS and COMMON
     clients = {
         "COMMON": MCPClient("COMMON"),
         "ATLAS": MCPClient("ATLAS"),
     }
 
-    # Initial state
+    # Initial stage and prompt
     state = {"payload": sample_input, "logs": []}
 
-    print(f"🤖 Agent {config['agent_name']} starting...")
+    print(f"Agent {config['agent_name']} starting...")
     print(f"Personality:\n{config['personality']}")
 
-    # Run stages
+    # Running stage
     for stage_conf in config["stages"]:
         stage_fn = make_stage(stage_conf, clients, config["personality"])
         state = stage_fn(state)
